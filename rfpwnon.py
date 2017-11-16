@@ -106,11 +106,14 @@ baudRate = results.baudRate
 d = RfCat()
 
 def ConfigureD(d):
+    d.setModeIDLE()
     d.setMdmModulation(MOD_ASK_OOK)
     d.setFreq(freq)
     d.setMdmSyncMode(0)
     d.setMdmDRate(baudRate)
+    d.setMdmChanSpc(240000)
     d.setMaxPower()
+    d.setAmpMode(RF_TX_POWER_AMPLIFIER_ACTION_ON)
 
 brute = ''
 fullbrute = ''
@@ -179,7 +182,7 @@ if results.tri:
 if(results.repeatTimes >= 2) or (results.pPad is not False) or (results.tPad is not False):
     adder = 1
     endy = binL
-    
+
 #transmit
 while(startn < brutelength):
     for i in range(0,results.repeatTimes):
