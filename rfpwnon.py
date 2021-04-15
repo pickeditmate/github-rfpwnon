@@ -114,6 +114,8 @@ def ConfigureD(d):
     d.setMdmDRate(baudRate)
     d.setMdmChanSpc(240000)
     d.setMaxPower()
+    
+    #If not using PandwaRF comment out the line below
     d.setAmpMode(RF_TX_POWER_AMPLIFIER_ACTION_ON)
 
 brute = ''
