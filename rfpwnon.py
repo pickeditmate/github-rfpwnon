@@ -15,7 +15,8 @@ import bitstring
 #It is up to you to use this script both ethically and legally.
 
 #parser and help
-parser = argparse.ArgumentParser(description='Application to use a rfcat compatible device to brute force a particular AM OOK or raw binary signal.',version="rfpwnon v-0.8")
+parser = argparse.ArgumentParser(description="Application to use a rfcat compatible device to brute force a particular AM OOK or raw binary signal.")
+parser.add_argument('-v', '--version', action='version', version='%(prog)s ver-0.8')
 parser.add_argument('-f', action="store", default="915000000", dest="baseFreq",help='Specify the target frequency to transmit on, default is 915000000.',type=int)
 parser.add_argument('-b', action="store", dest="baudRate",default=2000,help='Specify the baudrate of the signal, default is 2000.',type=int)
 parser.add_argument('-l', action="store", dest="binLength",default=6,help='Specify the binary length of the signal to brute force.  By default this is the binary length before pwm encoding.  When the flag --raw is set this is the binary length of the pwm encoded signal.',type=int)
@@ -33,7 +34,7 @@ results = parser.parse_args()
 #set normal pwm signal
 zeropwm="1110"
 onepwm="1000"
-brutechar="01"
+brutechar=b"01"
 #other possibilities include but not limited to
 #zeropwm="1110"
 #onepwm="1100"
@@ -47,7 +48,7 @@ if results.tri:
     zeropwm="10001000"
     onepwm="11101110"
     twopwm="10001110"
-    brutechar="012"
+    brutechar=b"012"
     #other possibilities include but not limited to
     #zeropwm="100000000100000000"
     #onepwm="111111110100000000"
@@ -72,32 +73,32 @@ def convertOOK(key):
 
 #needs to be updated or removed
 def printKeys():
-    print ""
-    print "---------------"
-    print "Non PWM Signal"
-    print "---------------"
-    print "Binary:"
-    print brutepackettemp
-    print "Hex:"
+    print ("")
+    print ("---------------")
+    print ("Non PWM Signal")
+    print ("---------------")
+    print ("Binary:")
+    print (brutepackettemp)
+    print ("Hex:")
     nonpwmhex = bitstring.BitArray(bin=brutepackettemp).tobytes()
     hexkey = ''.join(x.encode('hex') for x in nonpwmhex)
-    print ':'.join(x.encode('hex') for x in nonpwmhex)
-    print "Decimal:"
+    print (':'.join(x.encode('hex') for x in nonpwmhex))
+    print ("Decimal:")
     decimalkey = int(hexkey, 16)
-    print str(decimalkey)
-    print ""
+    print (str(decimalkey))
+    print ("")
     if(results.raw is not True):
-        print "------------------"
-        print "PWM Encoded Signal"
-        print "------------------"
+        print ("------------------")
+        print ("PWM Encoded Signal")
+        print ("------------------")
         hexkeypwm = ''.join(x.encode('hex') for x in key_packed)
-        print "Binary:"
-        print pwmbin
-        print "Hex:"
-        print ':'.join(x.encode('hex') for x in key_packed)
-        print "Decimal:"
+        print ("Binary:")
+        print (pwmbin)
+        print ("Hex:")
+        print (':'.join(x.encode('hex') for x in key_packed))
+        print ("Decimal:")
         decimalkeypwm = int(hexkeypwm, 16)
-        print str(decimalkeypwm)
+        print (str(decimalkeypwm))
 
 #set variables and configure rfcat
 binL = results.binLength
@@ -123,7 +124,7 @@ ConfigureD(d)
 #print d.reprRadioConfig()
 
 #where the magic happens
-print "Generating de bruijn sequence..."
+print ("Generating de bruijn sequence...")
 
 ##### de Bruijn Sequence borrowed from Peter Otten - http://code.activestate.com/lists/python-list/660415/ #####
 _mapping = bytearray(b"?")*256
@@ -151,23 +152,23 @@ seq = debruijn_bytes(len(brutechar), binL)
 tail = seq[:binL-1]
 fullbrute = (seq+tail)
 
-print ""
-print 'Brute Forcing Frequency: %s' % freq
+print ("")
+print ('Brute Forcing Frequency: %s' % freq)
 
 if(results.pPad is not False):
-    print ""
-    print "Padding before binary:"
-    print results.pPad
+    print ("")
+    print ("Padding before binary:")
+    print (results.pPad)
 if(results.tPad is not False):
-    print ""
-    print "Padding after binary:"
-    print results.tPad
+    print ("")
+    print ("Padding after binary:")
+    print (results.tPad)
 
 #show the magic
 if results.show:
-    print ""
-    print "De Bruijn Sequence:"
-    print fullbrute
+    print ("")
+    print ("De Bruijn Sequence:")
+    print (fullbrute)
 
 brutepacket = fullbrute
 
@@ -202,8 +203,8 @@ while(startn < brutelength):
             else:
                 key_packed = convertOOK(brutepackettemp)
 
-            print ""
-            print "Transmitting..."
+            print ("")
+            print ("Transmitting...")
             d.makePktFLEN(len(key_packed))
             d.RFxmit(key_packed)
 
@@ -211,16 +212,16 @@ while(startn < brutelength):
                 printKeys()
             else:
                 if(results.raw):
-                    print "Raw binary:"
-                    print brutepackettemp
+                    print ("Raw binary:")
+                    print (brutepackettemp)
                     continue
-                print "Binary before pwm encoding:"
-                print brutepackettemp
-                print "Binary after pwm encoding:"
-                print pwmbin
+                print ("Binary before pwm encoding:")
+                print (brutepackettemp)
+                print ("Binary after pwm encoding:")
+                print (pwmbin)
 
-        except Exception, e:
-            print "Lost communication to USB device.. waiting 3 seconds, then retrying."
+        except Exception as e:
+            print ("Lost communication to USB device.. waiting 3 seconds, then retrying.")
             time.sleep(3)
             ConfigureD(d)
 
@@ -240,7 +241,7 @@ while(startn < brutelength):
         startn = startn + adder - binL
         endy = endy + adder - binL
 
-print ""
-print "Done."
+print ("")
+print ("Done.")
 d.setModeIDLE()
 
