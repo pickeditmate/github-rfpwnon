@@ -17,8 +17,8 @@ import bitstring
 #parser and help
 parser = argparse.ArgumentParser(description="Application to use a rfcat compatible device to brute force a particular AM OOK or raw binary signal.")
 parser.add_argument('-v', '--version', action='version', version='%(prog)s ver-0.8')
-parser.add_argument('-f', action="store", default="915000000", dest="baseFreq",help='Specify the target frequency to transmit on, default is 915000000.',type=int)
-parser.add_argument('-b', action="store", dest="baudRate",default=2000,help='Specify the baudrate of the signal, default is 2000.',type=int)
+parser.add_argument('-f', action="store", default="315000000", dest="baseFreq",help='Specify the target frequency to transmit on, default is 915000000.',type=int)
+parser.add_argument('-b', action="store", dest="baudRate",default=4800,help='Specify the baudrate of the signal, default is 2000.',type=int)
 parser.add_argument('-l', action="store", dest="binLength",default=6,help='Specify the binary length of the signal to brute force.  By default this is the binary length before pwm encoding.  When the flag --raw is set this is the binary length of the pwm encoded signal.',type=int)
 parser.add_argument('-r', action="store", dest="repeatTimes",default=1,help='Specify the number of times to repeat the signal.  By default this is set to 1 and uses the de bruijn sequence for speed.  When set greater than one the script sends each possible permutation of the signal individually and takes much longer to complete.  For some applications the signal is required to be sent multiple times.',type=int)
 parser.add_argument('--keys', action="store_true",help='Displays the values being transmitted in binary, hex, and decimal both before and after pwm encoding.')
@@ -32,8 +32,8 @@ results = parser.parse_args()
 #define what a 0 or a 1 represents after pwm encoding is applied, or even a 2 if trinary!
 
 #set normal pwm signal
-zeropwm="1110"
-onepwm="1000"
+zeropwm="1000"
+onepwm="1110"
 brutechar=b"01"
 #other possibilities include but not limited to
 #zeropwm="1110"
@@ -110,13 +110,12 @@ def ConfigureD(d):
     d.setModeIDLE()
     d.setMdmModulation(MOD_ASK_OOK)
     d.setFreq(freq)
-    d.setMdmSyncMode(0)
+    #d.setMdmSyncMode(0)
     d.setMdmDRate(baudRate)
     d.setMdmChanSpc(240000)
     d.setMaxPower()
-    
-    #If not using PandwaRF comment out the line below
-    d.setAmpMode(RF_TX_POWER_AMPLIFIER_ACTION_ON)
+    d.lowball()
+    d.setAmpMode(1)
 
 brute = ''
 fullbrute = ''
@@ -246,4 +245,3 @@ while(startn < brutelength):
 print ("")
 print ("Done.")
 d.setModeIDLE()
-
